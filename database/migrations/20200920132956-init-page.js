@@ -12,7 +12,7 @@ module.exports = {
         unique: true,
       },
       name: {
-        type: STRING,
+        type: STRING(20),
         allowNull: false,
       },
       description: STRING,

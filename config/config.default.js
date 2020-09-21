@@ -39,6 +39,7 @@ module.exports = appInfo => {
         },
       },
     },
+    middleware: ['errorHandler'],
   }
 
   // add your user config here

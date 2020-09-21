@@ -6,5 +6,5 @@
 module.exports = app => {
   const { router, controller } = app
   router.get('/', controller.home.index)
-  router.resources('page', '/page', controller.page)
+  router.resources('page', '/api/page', controller.page)
 }
