@@ -10,7 +10,15 @@ function toInt(str) {
 class PageController extends Controller {
   async index() {
     const ctx = this.ctx
-    const query = { limit: toInt(ctx.query.limit), offset: toInt(ctx.query.offset) }
+    const Op = ctx.app.Sequelize.Op
+    const { limit, offset, name } = ctx.query
+    const filterObj = name ? { name: { [Op.substring]: name } } : {}
+    const query = {
+      limit: toInt(limit),
+      offset: toInt(offset),
+      where: filterObj,
+      order: [['id', 'DESC']],
+    }
     ctx.body = await ctx.model.Page.findAndCountAll(query)
   }
 
@@ -21,8 +29,8 @@ class PageController extends Controller {
 
   async create() {
     const ctx = this.ctx
-    const { name, description, data = {} } = ctx.request.body
-    const page = await ctx.model.Page.create({ name, description, data })
+    const { name, description } = ctx.request.body
+    const page = await ctx.model.Page.create({ name, description, data: [] })
     ctx.status = 201
     ctx.body = page
   }
@@ -37,6 +45,19 @@ class PageController extends Controller {
     }
     const { name, description } = ctx.request.body
     await page.update({ name, description })
+    ctx.body = page
+  }
+
+  async updatePageData() {
+    const ctx = this.ctx
+    const id = ctx.params.id
+    const page = await ctx.model.Page.findByPk(id)
+    if (!page) {
+      ctx.status = 404
+      return
+    }
+    const { data } = ctx.request.body
+    await page.update({ data })
     ctx.body = page
   }
 
